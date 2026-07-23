@@ -1,0 +1,31 @@
+employee_id,nik,nama_lengkap,email,no_hp,jenis_kelamin,tanggal_lahir,alamat,departemen,jabatan,status,tanggal_masuk,gaji_pokok,bank,nomor_rekening,atas_nama_rekening
+EMP001,3173010101010001,Arif Giovanni,arif.giovanni@company.com,081234567801,L,1997-05-12,Jakarta,IT,Frontend Developer,Tetap,2022-01-03,8500000,Bank BCA,1234567890,Arif Giovanni
+EMP002,3173010101010002,Bagus Santoso,bagus.santoso@company.com,081234567802,L,1995-08-15,Bekasi,HR,HR Manager,Tetap,2021-05-12,9000000,Bank BRI,1234567891,Bagus Santoso
+EMP003,3173010101010003,Ahmad Fauzan,ahmad.fauzan@company.com,081234567803,L,1998-01-10,Jakarta,IT,Staff IT,Tetap,2022-01-03,6500000,Bank BCA,1234567892,Ahmad Fauzan
+EMP004,3173010101010004,Budi Santoso,budi.santoso@company.com,081234567804,L,1996-04-15,Bekasi,HR,HR Staff,Tetap,2021-05-12,6000000,Bank BRI,1234567893,Budi Santoso
+EMP005,3173010101010005,Citra Lestari,citra.lestari@company.com,081234567805,P,1999-07-12,Depok,Finance,Finance Staff,Tetap,2023-02-10,6200000,Bank Mandiri,1234567894,Citra Lestari
+EMP006,3173010101010006,Dimas Pratama,dimas.pratama@company.com,081234567806,L,1995-09-20,Bogor,Marketing,Marketing Staff,Tetap,2020-11-18,5800000,Bank BNI,1234567895,Dimas Pratama
+EMP007,3173010101010007,Eka Saputra,eka.saputra@company.com,081234567807,L,1997-03-18,Tangerang,Operasional,Supervisor,Tetap,2021-08-02,7500000,Bank BCA,1234567896,Eka Saputra
+EMP008,3173010101010008,Fitri Handayani,fitri.handayani@company.com,081234567808,P,1998-11-25,Jakarta,HR,HR Officer,Kontrak,2024-01-05,5500000,Bank BRI,1234567897,Fitri Handayani
+EMP009,3173010101010009,Gilang Ramadhan,gilang.ramadhan@company.com,081234567809,L,1994-06-11,Bekasi,IT,Backend Developer,Tetap,2020-02-15,9000000,Bank Mandiri,1234567898,Gilang Ramadhan
+EMP010,3173010101010010,Hani Permata,hani.permata@company.com,081234567810,P,1997-12-08,Depok,Finance,Accountant,Tetap,2022-06-20,7000000,Bank BNI,1234567899,Hani Permata
+EMP011,3173010101010011,Irfan Maulana,irfan.maulana@company.com,081234567811,L,1993-08-30,Bogor,Warehouse,Staff Gudang,Tetap,2019-10-15,5000000,Bank BCA,1234567800,Irfan Maulana
+EMP012,3173010101010012,Jihan Nuraini,jihan.nuraini@company.com,081234567812,P,1998-05-17,Tangerang,Marketing,Digital Marketing,Tetap,2022-09-01,6500000,Bank BRI,1234567801,Jihan Nuraini
+EMP013,3173010101010013,Kevin Setiawan,kevin.setiawan@company.com,081234567813,L,1995-10-09,Jakarta,IT,Frontend Developer,Tetap,2021-07-14,8500000,Bank Mandiri,1234567802,Kevin Setiawan
+EMP014,3173010101010014,Laila Salsabila,laila.salsabila@company.com,081234567814,P,1999-01-28,Bekasi,Finance,Finance Staff,Kontrak,2024-03-12,5500000,Bank BNI,1234567803,Laila Salsabila
+EMP015,3173010101010015,Muhammad Rizky,muhammad.rizky@company.com,081234567815,L,1996-04-22,Depok,Operasional,Staff Operasional,Tetap,2021-12-06,5800000,Bank BCA,1234567804,Muhammad Rizky
+EMP016,3173010101010016,Nadia Putri,nadia.putri@company.com,081234567816,P,1998-09-15,Jakarta,HR,HR Supervisor,Tetap,2020-05-25,8500000,Bank BRI,1234567805,Nadia Putri
+EMP017,3173010101010017,Oscar Wijaya,oscar.wijaya@company.com,081234567817,L,1992-07-14,Tangerang,Warehouse,Kepala Gudang,Tetap,2018-04-10,8000000,Bank Mandiri,1234567806,Oscar Wijaya
+EMP018,3173010101010018,Putri Maharani,putri.maharani@company.com,081234567818,P,1997-11-03,Bogor,IT,UI/UX Designer,Tetap,2023-01-09,7000000,Bank BNI,1234567807,Putri Maharani
+EMP019,3173010101010019,Raka Prakoso,raka.prakoso@company.com,081234567819,L,1994-03-29,Bekasi,Marketing,Marketing Executive,Tetap,2021-03-17,6200000,Bank BCA,1234567808,Raka Prakoso
+EMP020,3173010101010020,Siti Aisyah,siti.aisyah@company.com,081234567820,P,1999-06-19,Jakarta,Finance,Tax Staff,Tetap,2023-08-07,6000000,Bank BRI,1234567809,Siti Aisyah
+EMP021,3173010101010021,Taufik Hidayat,taufik.hidayat@company.com,081234567821,L,1996-02-05,Depok,Operasional,Staff Operasional,Tetap,2022-10-01,5600000,Bank Mandiri,1234567810,Taufik Hidayat
+EMP022,3173010101010022,Vina Amelia,vina.amelia@company.com,081234567822,P,1998-12-11,Tangerang,HR,Recruiter,Kontrak,2024-02-20,5400000,Bank BNI,1234567811,Vina Amelia
+EMP023,3173010101010023,Wahyu Hidayat,wahyu.hidayat@company.com,081234567823,L,1995-05-14,Jakarta,IT,QA Engineer,Tetap,2022-03-15,7000000,Bank BCA,1234567812,Wahyu Hidayat
+EMP024,3173010101010024,Yulia Anggraini,yulia.anggraini@company.com,081234567824,P,1997-08-22,Bekasi,HR,HR Specialist,Tetap,2021-09-01,6800000,Bank BRI,1234567813,Yulia Anggraini
+EMP025,3173010101010025,Zainal Abidin,zainal.abidin@company.com,081234567825,L,1993-11-30,Depok,Finance,Senior Accountant,Tetap,2020-04-12,8200000,Bank Mandiri,1234567814,Zainal Abidin
+EMP026,3173010101010026,Anisa Rahma,anisa.rahma@company.com,081234567826,P,1999-02-17,Bogor,Marketing,Content Writer,Kontrak,2023-11-05,5500000,Bank BNI,1234567815,Anisa Rahma
+EMP027,3173010101010027,Bayu Krisna,bayu.krisna@company.com,081234567827,L,1996-07-08,Tangerang,Operasional,Staff Admin,Tetap,2022-08-18,5700000,Bank BCA,1234567816,Bayu Krisna
+EMP028,3173010101010028,Cantika Dewi,cantika.dewi@company.com,081234567828,P,1994-12-03,Jakarta,IT,DevOps Engineer,Tetap,2020-07-20,9500000,Bank BRI,1234567817,Cantika Dewi
+EMP029,3173010101010029,Dedi Kurniawan,dedi.kurniawan@company.com,081234567829,L,1992-04-26,Bekasi,Warehouse,Logistik Staff,Tetap,2019-03-11,5200000,Bank Mandiri,1234567818,Dedi Kurniawan
+EMP030,3173010101010030,Erika Lestari,erika.lestari@company.com,081234567830,P,1998-10-19,Depok,Marketing,Public Relation,Kontrak,2023-05-14,6000000,Bank BNI,1234567819,Erika Lestari

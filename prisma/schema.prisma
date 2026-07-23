@@ -1,0 +1,232 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  role         Role          @default(EMPLOYEE)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  activityLogs ActivityLog[]
+  employee     Employee?
+  sessions     Session[]
+}
+
+model Position {
+  id          String         @id @default(uuid())
+  name        String
+  baseSalary  Float
+  allowance   Float
+  description String?
+  status      EmployeeStatus @default(ACTIVE)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  employees   Employee[]
+}
+
+model Employee {
+  id             String         @id @default(uuid())
+  userId         String?        @unique
+  name           String
+  email          String         @unique
+  phone          String
+  address        String
+  joinedDate     DateTime
+  gender         Gender
+  birthDate      DateTime
+  status         EmployeeStatus @default(ACTIVE)
+  photo          String?
+  positionId     String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  bankAccount    String?
+  bankName       BankName       @default(BANK_BCA)
+  accountHolder  String?
+  department     String?
+  employmentType EmploymentType @default(FULL_TIME)
+  leaveBalance   Int            @default(12)
+  npwp           String?
+  attendances    Attendance[]
+  position       Position       @relation(fields: [positionId], references: [id])
+  user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leaveRequests  LeaveRequest[]
+  payrolls       Payroll[]
+  salarySlips    SalarySlip[]
+  overtimes      Overtime[]
+}
+
+model Overtime {
+  id            String         @id @default(uuid())
+  employeeId    String
+  tanggal       DateTime
+  jamMulai      String
+  jamSelesai    String
+  totalJam      Float
+  tarifPerJam   Float          @default(35000)
+  nominalLembur Float
+  alasan        String
+  catatan       String?
+  status        OvertimeStatus @default(PENDING)
+  approvedBy    String?
+  approvedAt    DateTime?
+  payrollId     String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  employee Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  payroll  Payroll?  @relation(fields: [payrollId], references: [id], onDelete: SetNull)
+
+  @@index([employeeId])
+  @@index([status])
+  @@index([tanggal])
+}
+
+model LeaveRequest {
+  id         String      @id @default(uuid())
+  employeeId String
+  type       LeaveType
+  startDate  DateTime
+  endDate    DateTime
+  reason     String
+  status     LeaveStatus @default(PENDING)
+  attachment String?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  employee   Employee    @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+}
+
+model Payroll {
+  id                  String        @id @default(uuid())
+  employeeId          String
+  period              String
+  baseSalary          Float
+  allowance           Float
+  bonus               Float         @default(0)
+  deduction           Float         @default(0)
+  totalSalary         Float
+  status              PayrollStatus @default(DRAFT)
+  paidAt              DateTime?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+  bpjsKesehatan       Float         @default(0)
+  bpjsKetenagakerjaan Float         @default(0)
+  overtime            Float         @default(0)
+  pph21               Float         @default(0)
+  employee            Employee      @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  salarySlips         SalarySlip?
+  overtimes           Overtime[]
+
+  @@unique([employeeId, period])
+}
+
+model SalarySlip {
+  id         String   @id @default(uuid())
+  payrollId  String   @unique
+  employeeId String
+  qrCodeText String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  payroll    Payroll  @relation(fields: [payrollId], references: [id], onDelete: Cascade)
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  description String
+  actionType  String
+  createdAt   DateTime @default(now())
+  user        User?    @relation(fields: [userId], references: [id])
+}
+
+model Attendance {
+  id         String    @id @default(uuid())
+  employeeId String
+  date       String
+  clockIn    DateTime
+  clockOut   DateTime?
+  status     String
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  browser    String?
+  device     String?
+  fotoKeluar String?
+  fotoMasuk  String?
+  ipAddress  String?
+  latitude   Float?
+  longitude  Float?
+  employee   Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, date])
+}
+
+enum Role {
+  ADMIN
+  EMPLOYEE
+  HR
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PayrollStatus {
+  DRAFT
+  PAID
+}
+
+enum EmploymentType {
+  FULL_TIME
+  CONTRACT
+  FREELANCE
+}
+
+enum LeaveType {
+  CUTI
+  SAKIT
+  IZIN
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum BankName {
+  BANK_BCA
+  BANK_BRI
+  BANK_MANDIRI
+  BANK_BNI
+}
+
+enum OvertimeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  COMPLETED
+}
+

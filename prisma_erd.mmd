@@ -1,0 +1,134 @@
+erDiagram
+    User ||--o| Employee : "has profile"
+    User ||--o{ Session : "has active"
+    User ||--o{ ActivityLog : "logs action"
+    
+    Position ||--o{ Employee : "assigned to"
+    
+    Employee ||--o{ Attendance : "records"
+    Employee ||--o{ LeaveRequest : "submits"
+    Employee ||--o{ Overtime : "requests"
+    Employee ||--o{ Payroll : "receives"
+    Employee ||--o{ SalarySlip : "issued"
+    
+    Payroll ||--o| SalarySlip : "generates"
+    Payroll ||--o{ Overtime : "includes"
+
+    User {
+        string id PK
+        string email UK
+        string passwordHash
+        Role role
+        datetime createdAt
+        datetime updatedAt
+    }
+
+    Position {
+        string id PK
+        string name
+        float baseSalary
+        float allowance
+        string description
+        EmployeeStatus status
+    }
+
+    Employee {
+        string id PK
+        string userId FK, UK
+        string positionId FK
+        string name
+        string email UK
+        string phone
+        string address
+        datetime joinedDate
+        Gender gender
+        datetime birthDate
+        EmployeeStatus status
+        string photo
+        string bankAccount
+        BankName bankName
+        string accountHolder
+        string department
+        EmploymentType employmentType
+        int leaveBalance
+        string npwp
+    }
+
+    Attendance {
+        string id PK
+        string employeeId FK
+        string date
+        datetime clockIn
+        datetime clockOut
+        string status
+        string browser
+        string device
+        string fotoMasuk
+        string fotoKeluar
+        string ipAddress
+        float latitude
+        float longitude
+    }
+
+    LeaveRequest {
+        string id PK
+        string employeeId FK
+        LeaveType type
+        datetime startDate
+        datetime endDate
+        string reason
+        LeaveStatus status
+        string attachment
+    }
+
+    Overtime {
+        string id PK
+        string employeeId FK
+        string payrollId FK
+        datetime tanggal
+        string jamMulai
+        string jamSelesai
+        float totalJam
+        float tarifPerJam
+        float nominalLembur
+        string alasan
+        OvertimeStatus status
+    }
+
+    Payroll {
+        string id PK
+        string employeeId FK
+        string period
+        float baseSalary
+        float allowance
+        float bonus
+        float deduction
+        float totalSalary
+        PayrollStatus status
+        datetime paidAt
+        float bpjsKesehatan
+        float bpjsKetenagakerjaan
+        float overtime
+        float pph21
+    }
+
+    SalarySlip {
+        string id PK
+        string payrollId FK, UK
+        string employeeId FK
+        string qrCodeText
+    }
+
+    Session {
+        string id PK
+        string userId FK
+        string token UK
+        datetime expiresAt
+    }
+
+    ActivityLog {
+        string id PK
+        string userId FK
+        string description
+        string actionType
+    }

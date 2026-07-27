@@ -23,8 +23,8 @@ export async function GET(request: NextRequest) {
       const now = new Date();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-      const startOfToday = new Date(now.setHours(0, 0, 0, 0));
-      const endOfToday = new Date(now.setHours(23, 59, 59, 999));
+      const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+      const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
 
       const [monthOvertimes, todayRequests, pendingApproval] = await Promise.all([
         prisma.overtime.findMany({

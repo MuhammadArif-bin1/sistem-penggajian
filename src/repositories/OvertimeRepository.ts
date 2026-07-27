@@ -121,6 +121,24 @@ export class OvertimeRepository {
     });
   }
 
+  async countMonthlySubmissions(employeeId: string, targetDate: Date) {
+    const startOfMonth = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
+    const endOfMonth = new Date(targetDate.getFullYear(), targetDate.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    return prisma.overtime.count({
+      where: {
+        employeeId,
+        tanggal: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+        status: {
+          in: [OvertimeStatus.PENDING, OvertimeStatus.APPROVED, OvertimeStatus.COMPLETED],
+        },
+      },
+    });
+  }
+
   async create(data: Prisma.OvertimeCreateInput) {
     return prisma.overtime.create({
       data,

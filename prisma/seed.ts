@@ -18,7 +18,7 @@ async function main() {
 
   // Pre-compute password hashes
   const adminPasswordHash = await bcrypt.hash("admin123", 10);
-  const hrPasswordHash = await bcrypt.hash("hr123", 10);
+  const hrPasswordHash = await bcrypt.hash("hr1234", 10);
   const empPasswordHash = await bcrypt.hash("karyawan123", 10);
 
   // 1. Clean existing data

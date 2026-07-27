@@ -146,11 +146,17 @@ export class OvertimeService {
       throw new Error(`Anda sudah memiliki pengajuan lembur (${existing.jamMulai} - ${existing.jamSelesai}) pada tanggal ${dateStr}.`);
     }
 
-    // 6. Calculate Nominal
+    // 6. Check Maximum 5 Overtime Submissions per Month
+    const monthlyCount = await overtimeRepository.countMonthlySubmissions(employeeId, targetDate);
+    if (monthlyCount >= 5) {
+      throw new Error(`Batas maksimal pengajuan lembur adalah 5 kali per bulan. Anda sudah memiliki ${monthlyCount} pengajuan pada bulan ${mm}/${yyyy}.`);
+    }
+
+    // 7. Calculate Nominal
     const tarifPerJam = validated.tarifPerJam || 35000;
     const nominalLembur = totalJam * tarifPerJam;
 
-    // 7. Save to DB
+    // 8. Save to DB
     const overtime = await overtimeRepository.create({
       employee: { connect: { id: employeeId } },
       tanggal: targetDate,

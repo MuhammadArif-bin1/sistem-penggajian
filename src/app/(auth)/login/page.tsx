@@ -20,6 +20,7 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -326,41 +327,73 @@ export default function LoginPage() {
               )}
             </button>
 
-            {/* Quick Demo Accounts Helper */}
-            <div className="pt-4 border-t border-slate-100 text-xs space-y-2">
+            {/* Daftar Akun Demo */}
+            <div className="pt-4 border-t border-slate-100 text-xs space-y-2.5">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block text-center">
-                Akun Demo Uji Coba (Klik Instan)
+                Daftar Akun Demo Uji Coba
               </span>
-              <div className="grid grid-cols-3 gap-1.5">
+              <div className="space-y-1.5">
                 <button
                   type="button"
                   onClick={() => {
-                    register("email").onChange({ target: { name: "email", value: "admin@payroll.com" } });
-                    register("password").onChange({ target: { name: "password", value: "admin123" } });
+                    setValue("email", "admin@payroll.com");
+                    setValue("password", "admin123");
                   }}
-                  className="px-2 py-1.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 transition-all text-center"
+                  className="w-full px-3 py-2 bg-slate-50 hover:bg-blue-50/80 border border-slate-200 hover:border-blue-300 rounded-xl transition-all text-left flex items-center justify-between group cursor-pointer"
                 >
-                  Admin
+                  <div>
+                    <span className="text-[11px] font-bold text-slate-700 group-hover:text-blue-600 block">
+                      Admin
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-mono block">
+                      admin@payroll.com
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-slate-500 bg-slate-200/60 group-hover:bg-blue-100 group-hover:text-blue-600 px-2 py-0.5 rounded-md font-mono">
+                    admin123
+                  </span>
                 </button>
+
                 <button
                   type="button"
                   onClick={() => {
-                    register("email").onChange({ target: { name: "email", value: "hr@payroll.com" } });
-                    register("password").onChange({ target: { name: "password", value: "hr123" } });
+                    setValue("email", "hr@payroll.com");
+                    setValue("password", "hr1234");
                   }}
-                  className="px-2 py-1.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 transition-all text-center"
+                  className="w-full px-3 py-2 bg-slate-50 hover:bg-blue-50/80 border border-slate-200 hover:border-blue-300 rounded-xl transition-all text-left flex items-center justify-between group cursor-pointer"
                 >
-                  HR Manager
+                  <div>
+                    <span className="text-[11px] font-bold text-slate-700 group-hover:text-blue-600 block">
+                      HR Manager
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-mono block">
+                      hr@payroll.com
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-slate-500 bg-slate-200/60 group-hover:bg-blue-100 group-hover:text-blue-600 px-2 py-0.5 rounded-md font-mono">
+                    hr1234
+                  </span>
                 </button>
+
                 <button
                   type="button"
                   onClick={() => {
-                    register("email").onChange({ target: { name: "email", value: "karyawan@payroll.com" } });
-                    register("password").onChange({ target: { name: "password", value: "karyawan123" } });
+                    setValue("email", "karyawan@payroll.com");
+                    setValue("password", "karyawan123");
                   }}
-                  className="px-2 py-1.5 bg-slate-50 hover:bg-blue-50 hover:text-blue-600 border border-slate-200 rounded-lg text-[10px] font-bold text-slate-600 transition-all text-center"
+                  className="w-full px-3 py-2 bg-slate-50 hover:bg-blue-50/80 border border-slate-200 hover:border-blue-300 rounded-xl transition-all text-left flex items-center justify-between group cursor-pointer"
                 >
-                  Karyawan
+                  <div>
+                    <span className="text-[11px] font-bold text-slate-700 group-hover:text-blue-600 block">
+                      Karyawan
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-mono block">
+                      karyawan@payroll.com
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-slate-500 bg-slate-200/60 group-hover:bg-blue-100 group-hover:text-blue-600 px-2 py-0.5 rounded-md font-mono">
+                    karyawan123
+                  </span>
                 </button>
               </div>
             </div>

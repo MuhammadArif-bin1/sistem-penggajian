@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" className={cn("h-full", "antialiased", "font-sans", geist.variable)} suppressHydrationWarning>
-      <body className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-950 dark:text-slate-50 flex flex-col font-sans transition-colors duration-200">
+      <body className="min-h-full bg-slate-50 text-slate-950 flex flex-col font-sans">
         <Providers>
           <AuthProvider>{children}</AuthProvider>
         </Providers>

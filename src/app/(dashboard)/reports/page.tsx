@@ -102,49 +102,49 @@ export default function ReportsPage() {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 no-print">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Laporan Payroll</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Laporan Payroll</h1>
           <p className="text-sm text-slate-500 mt-0.5">
             Analisis pengeluaran penggajian, filter per periode bulanan, dan ekspor dokumen.
           </p>
         </div>
-          <div className="flex gap-2 w-full sm:w-auto">
-            <button
-              onClick={() => {
-                const q = new URLSearchParams();
-                if (periodFilter) q.append("period", periodFilter);
-                if (employeeFilter) q.append("employeeId", employeeFilter);
-                q.append("format", "csv");
-                window.open(`/api/reports?${q.toString()}`);
-              }}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer"
-            >
-              <Download size={14} />
-              <span>Rekap Payroll</span>
-            </button>
-            <button
-              onClick={() => {
-                const q = new URLSearchParams();
-                if (periodFilter) q.append("period", periodFilter);
-                q.append("format", "mass_transfer");
-                window.open(`/api/reports?${q.toString()}`);
-              }}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer"
-            >
-              <Download size={14} />
-              <span>Mass Transfer Bank</span>
-            </button>
-            <button
-              onClick={() => {
-                const q = new URLSearchParams();
-                if (periodFilter) q.append("period", periodFilter);
-                q.append("format", "taxes");
-                window.open(`/api/reports?${q.toString()}`);
-              }}
-              className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer"
-            >
-              <Download size={14} />
-              <span>Pajak & BPJS</span>
-            </button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button
+            onClick={() => {
+              const q = new URLSearchParams();
+              if (periodFilter) q.append("period", periodFilter);
+              if (employeeFilter) q.append("employeeId", employeeFilter);
+              q.append("format", "csv");
+              window.open(`/api/reports?${q.toString()}`);
+            }}
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer"
+          >
+            <Download size={14} />
+            <span>Rekap Payroll</span>
+          </button>
+          <button
+            onClick={() => {
+              const q = new URLSearchParams();
+              if (periodFilter) q.append("period", periodFilter);
+              q.append("format", "mass_transfer");
+              window.open(`/api/reports?${q.toString()}`);
+            }}
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer"
+          >
+            <Download size={14} />
+            <span>Mass Transfer Bank</span>
+          </button>
+          <button
+            onClick={() => {
+              const q = new URLSearchParams();
+              if (periodFilter) q.append("period", periodFilter);
+              q.append("format", "taxes");
+              window.open(`/api/reports?${q.toString()}`);
+            }}
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold shadow-sm transition-all cursor-pointer"
+          >
+            <Download size={14} />
+            <span>Pajak & BPJS</span>
+          </button>
           <button
             onClick={handlePrint}
             className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold shadow-md shadow-blue-500/20 hover:shadow-blue-500/30 transition-all cursor-pointer"
@@ -163,7 +163,7 @@ export default function ReportsPage() {
       </div>
 
       {/* Filter Options (Hidden on print) */}
-      <div className="flex flex-col sm:flex-row gap-3 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-4 shadow-sm no-print">
+      <div className="flex flex-col sm:flex-row gap-3 bg-white border border-slate-200/80 rounded-2xl p-4 shadow-sm no-print">
         {/* Month */}
         <div className="flex-1 flex flex-col gap-1.5">
           <label className="text-[10px] font-bold text-slate-500 uppercase">Periode</label>
@@ -173,7 +173,7 @@ export default function ReportsPage() {
               type="month"
               value={periodFilter}
               onChange={(e) => setPeriodFilter(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-750 dark:text-slate-200"
+              className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-750"
             />
           </div>
         </div>
@@ -186,7 +186,7 @@ export default function ReportsPage() {
             <select
               value={employeeFilter}
               onChange={(e) => setEmployeeFilter(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 dark:text-slate-300"
+              className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700"
             >
               <option value="">Semua Karyawan</option>
               {employees.map((emp) => (
@@ -201,9 +201,9 @@ export default function ReportsPage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
           <span className="text-[10px] font-bold text-slate-500 uppercase">Total Pengeluaran Bersih</span>
-          <p className="text-xl font-bold text-slate-800 dark:text-white mt-1">
+          <p className="text-xl font-bold text-slate-800 mt-1">
             Rp {totalNetSalary.toLocaleString("id-ID")}
           </p>
           <div className="flex items-center gap-1 text-[10px] text-slate-400 mt-2">
@@ -212,9 +212,9 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
           <span className="text-[10px] font-bold text-slate-500 uppercase">Akumulasi Bonus</span>
-          <p className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">
+          <p className="text-xl font-bold text-emerald-600 mt-1">
             Rp {totalBonus.toLocaleString("id-ID")}
           </p>
           <div className="flex items-center gap-1 text-[10px] text-slate-400 mt-2">
@@ -223,7 +223,7 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl p-5 shadow-sm">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-sm">
           <span className="text-[10px] font-bold text-slate-500 uppercase">Total Potongan</span>
           <p className="text-xl font-bold text-rose-500 mt-1">
             Rp {totalDeduction.toLocaleString("id-ID")}
@@ -236,11 +236,11 @@ export default function ReportsPage() {
       </div>
 
       {/* Reports Table */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-2xl shadow-sm overflow-hidden print-shadow-none">
+      <div className="bg-white border border-slate-200/80 rounded-2xl shadow-sm overflow-hidden print-shadow-none">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
-              <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400 font-semibold h-10 bg-slate-50/50 dark:bg-slate-800/20">
+              <tr className="border-b border-slate-200 text-slate-400 font-semibold h-10 bg-slate-50/50">
                 <th className="py-2.5 px-4">Nama Karyawan</th>
                 <th className="py-2.5 px-4">Jabatan</th>
                 <th className="py-2.5 px-4">Periode</th>
@@ -252,7 +252,7 @@ export default function ReportsPage() {
                 <th className="py-2.5 px-4">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+            <tbody className="divide-y divide-slate-100">
               {isLoading ? (
                 <tr>
                   <td colSpan={9} className="py-12 text-center">
@@ -261,8 +261,8 @@ export default function ReportsPage() {
                 </tr>
               ) : reportData.length > 0 ? (
                 reportData.map((row) => (
-                  <tr key={row.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors h-12">
-                    <td className="py-2 px-4 font-semibold text-slate-800 dark:text-white">
+                  <tr key={row.id} className="hover:bg-slate-50/50 transition-colors h-12">
+                    <td className="py-2 px-4 font-semibold text-slate-800">
                       {row.employee.name}
                     </td>
                     <td className="py-2 px-4 text-slate-500">
@@ -271,10 +271,10 @@ export default function ReportsPage() {
                     <td className="py-2 px-4 text-slate-500">
                       {row.period}
                     </td>
-                    <td className="py-2 px-4 text-slate-700 dark:text-slate-300 font-mono">
+                    <td className="py-2 px-4 text-slate-700 font-mono">
                       Rp {row.baseSalary.toLocaleString("id-ID")}
                     </td>
-                    <td className="py-2 px-4 text-slate-700 dark:text-slate-300 font-mono">
+                    <td className="py-2 px-4 text-slate-700 font-mono">
                       Rp {row.allowance.toLocaleString("id-ID")}
                     </td>
                     <td className="py-2 px-4 text-emerald-600 font-mono">
@@ -283,15 +283,15 @@ export default function ReportsPage() {
                     <td className="py-2 px-4 text-rose-500 font-mono">
                       Rp {row.deduction.toLocaleString("id-ID")}
                     </td>
-                    <td className="py-2 px-4 font-bold text-slate-850 dark:text-white font-mono">
+                    <td className="py-2 px-4 font-bold text-slate-850 font-mono">
                       Rp {row.totalSalary.toLocaleString("id-ID")}
                     </td>
                     <td className="py-2 px-4">
                       <span
                         className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                           row.status === "PAID"
-                            ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600"
-                            : "bg-amber-50 dark:bg-amber-950/40 text-amber-600"
+                            ? "bg-emerald-50 text-emerald-600"
+                            : "bg-amber-50 text-amber-600"
                         }`}
                       >
                         {row.status === "PAID" ? "Lunas" : "Draft"}
@@ -308,7 +308,7 @@ export default function ReportsPage() {
               )}
               {/* Grand Total Row */}
               {reportData.length > 0 && (
-                <tr className="bg-slate-50 dark:bg-slate-800/40 font-bold h-12 border-t-2 border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
+                <tr className="bg-slate-50 font-bold h-12 border-t-2 border-slate-200 text-slate-900">
                   <td colSpan={3} className="py-2 px-4 text-left">
                     TOTAL KESELURUHAN
                   </td>
@@ -324,7 +324,7 @@ export default function ReportsPage() {
                   <td className="py-2 px-4 text-rose-500 font-mono">
                     Rp {totalDeduction.toLocaleString("id-ID")}
                   </td>
-                  <td colSpan={2} className="py-2 px-4 text-blue-600 dark:text-blue-400 font-mono text-sm">
+                  <td colSpan={2} className="py-2 px-4 text-blue-600 font-mono text-sm">
                     Rp {totalNetSalary.toLocaleString("id-ID")}
                   </td>
                 </tr>

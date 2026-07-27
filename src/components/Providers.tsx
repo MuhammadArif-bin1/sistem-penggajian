@@ -49,33 +49,12 @@ export function useToast() {
 }
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-  // Theme State
-  const [theme, setTheme] = useState<Theme>("light");
-  
   useEffect(() => {
-    // Initial theme check
-    const savedTheme = localStorage.getItem("theme") as Theme;
-    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    const initialTheme = savedTheme || systemTheme;
-    
-    setTheme(initialTheme);
-    if (initialTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
+    // Force light theme and clean up dark class if present
+    document.documentElement.classList.remove("dark");
   }, []);
 
-  const toggleTheme = () => {
-    const nextTheme = theme === "light" ? "dark" : "light";
-    setTheme(nextTheme);
-    localStorage.setItem("theme", nextTheme);
-    if (nextTheme === "dark") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
+  const toggleTheme = () => {};
 
   // Toast State
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -91,7 +70,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeContext.Provider value={{ theme, toggleTheme }}>
+      <ThemeContext.Provider value={{ theme: "light", toggleTheme }}>
         <ToastContext.Provider value={{ showToast }}>
           {children}
           
@@ -102,12 +81,12 @@ export default function Providers({ children }: { children: React.ReactNode }) {
                 key={toast.id}
                 className={`flex items-center justify-between p-4 rounded-xl shadow-lg border transition-all duration-300 transform translate-y-0 scale-100 ${
                   toast.type === "success"
-                    ? "bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/80 dark:border-emerald-800 dark:text-emerald-200"
+                    ? "bg-emerald-50 border-emerald-200 text-emerald-800"
                     : toast.type === "error"
-                    ? "bg-rose-50 border-rose-200 text-rose-800 dark:bg-rose-950/80 dark:border-rose-800 dark:text-rose-200"
+                    ? "bg-rose-50 border-rose-200 text-rose-800"
                     : toast.type === "warning"
-                    ? "bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950/80 dark:border-amber-800 dark:text-amber-200"
-                    : "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-950/80 dark:border-blue-800 dark:text-blue-200"
+                    ? "bg-amber-50 border-amber-200 text-amber-800"
+                    : "bg-blue-50 border-blue-200 text-blue-800"
                 }`}
               >
                 <div className="text-sm font-medium mr-4">{toast.message}</div>

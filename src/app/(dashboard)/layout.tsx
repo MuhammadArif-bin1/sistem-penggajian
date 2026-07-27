@@ -4,7 +4,6 @@ import React, { useMemo, useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthContext";
-import { useTheme } from "@/components/Providers";
 import {
   LayoutDashboard,
   Users,
@@ -17,8 +16,6 @@ import {
   Menu,
   ChevronLeft,
   ChevronRight,
-  Sun,
-  Moon,
   Bell,
   Loader2,
   CalendarCheck,
@@ -153,18 +150,18 @@ function SidebarContent({
   const isActive = (href: string) => normalizePath(href) === normalizedPathname;
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-slate-900 border-r border-slate-200/80 dark:border-slate-800 shadow-[1px_0_10px_rgba(0,0,0,0.03)] transition-colors duration-200">
-      <div className="h-16 flex items-center justify-between px-4 border-b border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90">
+    <div className="flex flex-col h-full bg-white border-r border-slate-200/80 shadow-[1px_0_10px_rgba(0,0,0,0.03)] transition-colors duration-200">
+      <div className="h-16 flex items-center justify-between px-4 border-b border-slate-200/80 bg-white/90">
         <div className="flex items-center gap-3 overflow-hidden">
           <div className="min-w-[32px] w-8 h-8 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-sm shadow-blue-600/20">
             <Wallet size={16} />
           </div>
           {!collapsed && (
             <div className="min-w-0">
-              <p className="font-semibold text-sm text-slate-800 dark:text-slate-100 truncate">
+              <p className="font-semibold text-sm text-slate-800 truncate">
                 Sistem Penggajian
               </p>
-              <p className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-[0.25em]">
+              <p className="text-[10px] text-slate-400 uppercase tracking-[0.25em]">
                 HRIS Panel
               </p>
             </div>
@@ -172,7 +169,7 @@ function SidebarContent({
         </div>
         <button
           onClick={onToggleCollapsed}
-          className="hidden md:flex p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 cursor-pointer transition-all"
+          className="hidden md:flex p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-700 cursor-pointer transition-all"
         >
           {collapsed ? <ChevronRight size={15} /> : <ChevronLeft size={15} />}
         </button>
@@ -186,7 +183,7 @@ function SidebarContent({
             className={`flex items-center gap-3 h-11 px-3.5 rounded-xl text-sm transition-all duration-200 ${
               isActive(dashboardItem.href)
                 ? "bg-blue-600 text-white font-semibold shadow-sm shadow-blue-600/25"
-                : "text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-600 dark:hover:text-blue-400"
+                : "text-slate-600 hover:bg-blue-50 hover:text-blue-600"
             }`}
           >
             <LayoutDashboard
@@ -199,7 +196,7 @@ function SidebarContent({
 
         {visibleGroups.map((group) => (
           <div key={group.title} className="mt-4 first:mt-3">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-3.5 mb-2 mt-4 select-none">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3.5 mb-2 mt-4 select-none">
               {group.title}
             </p>
             <div className="space-y-1.5">
@@ -214,7 +211,7 @@ function SidebarContent({
                     className={`flex items-center gap-3 h-11 px-3.5 rounded-xl text-sm transition-all duration-200 ${
                       active
                         ? "bg-blue-600 text-white font-semibold shadow-sm shadow-blue-600/25"
-                        : "text-slate-600 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-blue-950/40 hover:text-blue-600 dark:hover:text-blue-400"
+                        : "text-slate-600 hover:bg-blue-50 hover:text-blue-600"
                     }`}
                   >
                     <Icon
@@ -230,7 +227,7 @@ function SidebarContent({
         ))}
       </div>
 
-      <div className="p-3 border-t border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80">
+      <div className="p-3 border-t border-slate-200/80 bg-white/80">
         {!collapsed && (
           <div className="mb-3 rounded-xl border border-slate-200/80 bg-slate-50/70 p-3">
             <div className="flex items-center gap-3">
@@ -239,7 +236,7 @@ function SidebarContent({
                   user.email.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
+                <p className="text-sm font-semibold text-slate-800 truncate">
                   {user.employee?.name || "Administrator"}
                 </p>
                 <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-700 mt-1">
@@ -252,7 +249,7 @@ function SidebarContent({
 
         <button
           onClick={logout}
-          className="w-full flex items-center gap-3 h-11 px-3.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition-all"
+          className="w-full flex items-center gap-3 h-11 px-3.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-blue-600 cursor-pointer transition-all"
         >
           <LogOut size={17} className="text-slate-400 transition-colors" />
           {!collapsed && <span>Keluar</span>}
@@ -268,7 +265,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { user, loading, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
@@ -458,7 +454,7 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="h-screen overflow-hidden flex bg-gradient-to-tr from-[#FFF5E6] via-[#FFFDF9] to-[#F1F5F9] dark:from-[#0b0f19] dark:via-[#111827] dark:to-[#0f172a] font-sans antialiased text-[#0F172A] dark:text-[#F8FAFC] relative transition-colors duration-300">
+    <div className="h-screen overflow-hidden flex bg-gradient-to-tr from-[#FFF5E6] via-[#FFFDF9] to-[#F1F5F9] font-sans antialiased text-[#0F172A] relative transition-colors duration-300">
       {/* Decorative Glow Orbs for Premium White-Orange Depth */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-orange-400/10 blur-[130px] pointer-events-none -z-10" />
       <div className="absolute bottom-[-15%] right-[-10%] w-[45%] h-[45%] rounded-full bg-blue-500/5 blur-[120px] pointer-events-none -z-10" />
@@ -500,31 +496,22 @@ export default function DashboardLayout({
       {/* Main Layout Area */}
       <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Header */}
-        <header className="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md z-20 flex-shrink-0 flex items-center justify-between px-5 md:px-7 transition-all duration-300 shadow-sm shadow-slate-100/50 dark:shadow-none no-print">
+        <header className="h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md z-20 flex-shrink-0 flex items-center justify-between px-5 md:px-7 transition-all duration-300 shadow-sm shadow-slate-100/50 no-print">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setMobileOpen(true)}
-              className="md:hidden p-1.5 rounded-lg hover:bg-slate-105 dark:hover:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 cursor-pointer"
+              className="md:hidden p-1.5 rounded-lg hover:bg-slate-100 border border-slate-200/60 text-slate-600 cursor-pointer"
             >
               <Menu size={20} />
             </button>
           </div>
 
           <div className="flex items-center gap-3.5">
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              title="Toggle Theme"
-              className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700/50 text-slate-600 dark:text-slate-300 cursor-pointer transition-colors"
-            >
-              {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
-            </button>
-
             {/* Notifications Bell */}
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700/50 text-slate-600 dark:text-slate-300 relative cursor-pointer transition-colors"
+                className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 text-slate-600 relative cursor-pointer transition-colors"
               >
                 <Bell size={16} />
                 {unreadCount > 0 && (
@@ -543,22 +530,22 @@ export default function DashboardLayout({
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      className="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl overflow-hidden z-40"
+                      className="absolute right-0 mt-2 w-80 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden z-40"
                     >
-                      <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                        <span className="font-bold text-xs text-slate-900 dark:text-white">
+                      <div className="p-4 border-b border-slate-100 flex items-center justify-between">
+                        <span className="font-bold text-xs text-slate-900">
                           Notifikasi
                         </span>
                         {unreadCount > 0 && (
                           <button
                             onClick={markAllAsRead}
-                            className="text-[10px] font-bold text-orange-600 dark:text-orange-400 hover:underline cursor-pointer"
+                            className="text-[10px] font-bold text-orange-600 hover:underline cursor-pointer"
                           >
                             Tandai semua dibaca
                           </button>
                         )}
                       </div>
-                      <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/80">
+                      <div className="max-h-72 overflow-y-auto divide-y divide-slate-100">
                         {notifications.length > 0 ? (
                           notifications.map((item) => (
                             <div
@@ -566,13 +553,13 @@ export default function DashboardLayout({
                               onClick={() => toggleReadStatus(item.id)}
                               className={`p-4 text-left transition-colors cursor-pointer relative group ${
                                 item.unread
-                                  ? "bg-orange-500/5 dark:bg-orange-500/5 hover:bg-orange-500/10"
-                                  : "hover:bg-slate-50 dark:hover:bg-slate-800/40"
+                                  ? "bg-orange-500/5 hover:bg-orange-500/10"
+                                  : "hover:bg-slate-50"
                               }`}
                             >
                               <div className="flex justify-between items-start gap-2">
                                 <p
-                                  className={`text-xs font-bold text-slate-800 dark:text-slate-100 ${item.unread ? "pr-3" : ""}`}
+                                  className={`text-xs font-bold text-slate-800 ${item.unread ? "pr-3" : ""}`}
                                 >
                                   {item.title}
                                 </p>
@@ -580,7 +567,7 @@ export default function DashboardLayout({
                                   {item.time}
                                 </span>
                               </div>
-                              <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                              <p className="text-[10px] text-slate-500 mt-1 leading-relaxed">
                                 {item.message}
                               </p>
                               {item.unread && (
@@ -589,7 +576,7 @@ export default function DashboardLayout({
                             </div>
                           ))
                         ) : (
-                          <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs">
+                          <div className="p-8 text-center text-slate-400 text-xs">
                             Tidak ada notifikasi baru
                           </div>
                         )}

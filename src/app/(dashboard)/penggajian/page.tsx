@@ -90,6 +90,13 @@ export default function PayrollPage() {
   const [transferRef, setTransferRef] = useState("");
   const [paidDate, setPaidDate] = useState(() => new Date().toISOString().substring(0, 10));
 
+  // State for Bulk Pay Modal & Selection
+  const [selectedPayrollIds, setSelectedPayrollIds] = useState<string[]>([]);
+  const [isBulkPayModalOpen, setIsBulkPayModalOpen] = useState(false);
+  const [bulkPaymentMethod, setBulkPaymentMethod] = useState("BANK_TRANSFER");
+  const [bulkPaidDate, setBulkPaidDate] = useState(() => new Date().toISOString().substring(0, 10));
+  const [bulkTransferRef, setBulkTransferRef] = useState("");
+
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -247,12 +254,15 @@ export default function PayrollPage() {
       });
       const resData = await res.json();
       if (!resData.success) throw new Error(resData.message);
-      return resData.data;
+      return resData;
     },
-    onSuccess: (data) => {
+    onSuccess: (resData, variables) => {
       queryClient.invalidateQueries({ queryKey: ["payrolls"] });
       queryClient.invalidateQueries({ queryKey: ["admin-stats"] });
-      showToast(data?.message || "Payroll berhasil digenerate", "success");
+      if (variables.period) {
+        setPeriodFilter(variables.period);
+      }
+      showToast(resData?.message || "Payroll berhasil digenerate", "success");
       setIsGenerateModalOpen(false);
     },
     onError: (err: any) => {
@@ -298,6 +308,29 @@ export default function PayrollPage() {
     },
     onError: (err: any) => {
       showToast(err.message || "Gagal menghapus payroll", "error");
+    },
+  });
+
+  const bulkPayMutation = useMutation({
+    mutationFn: async (data: { payrollIds: string[]; paymentMethod: string; paidAt: string }) => {
+      const res = await fetch("/api/payroll/pay-bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const resData = await res.json();
+      if (!resData.success) throw new Error(resData.message);
+      return resData;
+    },
+    onSuccess: (resData) => {
+      queryClient.invalidateQueries({ queryKey: ["payrolls"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-stats"] });
+      showToast(resData.message || "Pembayaran gaji sekaligus berhasil diproses!", "success");
+      setSelectedPayrollIds([]);
+      setIsBulkPayModalOpen(false);
+    },
+    onError: (err: any) => {
+      showToast(err.message || "Gagal memproses pembayaran gaji sekaligus", "error");
     },
   });
 
@@ -363,6 +396,60 @@ export default function PayrollPage() {
     }
     return 0;
   });
+
+  // Selection & Bulk Pay Helpers
+  const draftPayrollsInView = sortedPayrolls.filter((p) => p.status === "DRAFT");
+  const isAllDraftSelected =
+    draftPayrollsInView.length > 0 &&
+    draftPayrollsInView.every((p) => selectedPayrollIds.includes(p.id));
+
+  const handleToggleSelectAllDraft = () => {
+    if (isAllDraftSelected) {
+      setSelectedPayrollIds([]);
+    } else {
+      setSelectedPayrollIds(draftPayrollsInView.map((p) => p.id));
+    }
+  };
+
+  const handleToggleSelectPayroll = (id: string) => {
+    if (selectedPayrollIds.includes(id)) {
+      setSelectedPayrollIds(selectedPayrollIds.filter((item) => item !== id));
+    } else {
+      setSelectedPayrollIds([...selectedPayrollIds, id]);
+    }
+  };
+
+  const openBulkPayModal = (idsToPay?: string[]) => {
+    const targetIds = idsToPay && idsToPay.length > 0 ? idsToPay : selectedPayrollIds;
+    if (targetIds.length === 0) {
+      if (draftPayrollsInView.length > 0) {
+        setSelectedPayrollIds(draftPayrollsInView.map((p) => p.id));
+      } else {
+        showToast("Tidak ada payroll Belum Dibayar yang dapat diproses", "warning");
+        return;
+      }
+    } else {
+      setSelectedPayrollIds(targetIds);
+    }
+    setBulkPaymentMethod("BANK_TRANSFER");
+    setBulkTransferRef(`BATCH-${Math.floor(100000 + Math.random() * 900000)}`);
+    setBulkPaidDate(new Date().toISOString().substring(0, 10));
+    setIsBulkPayModalOpen(true);
+  };
+
+  const handleConfirmBulkPay = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedPayrollIds.length === 0) return;
+    bulkPayMutation.mutate({
+      payrollIds: selectedPayrollIds,
+      paymentMethod: bulkPaymentMethod,
+      paidAt: bulkPaidDate,
+    });
+  };
+
+  const selectedPayrollsList = payrolls.filter((p) => selectedPayrollIds.includes(p.id));
+  const totalBulkPayAmount = selectedPayrollsList.reduce((sum, p) => sum + p.totalSalary, 0);
+  const totalUnpaidCount = payrolls.filter((p) => p.status === "DRAFT").length;
 
   const totalPages = Math.ceil(sortedPayrolls.length / itemsPerPage) || 1;
   const paginatedPayrolls = sortedPayrolls.slice(
@@ -443,6 +530,18 @@ export default function PayrollPage() {
         </div>
 
         <div className="flex gap-2">
+          {totalUnpaidCount > 0 && (
+            <button
+              onClick={() => openBulkPayModal(selectedPayrollIds.length > 0 ? selectedPayrollIds : draftPayrollsInView.map((p) => p.id))}
+              className="flex items-center justify-center gap-1.5 px-4.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md shadow-emerald-500/10 hover:shadow-emerald-500/20 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer w-full sm:w-auto"
+            >
+              <Wallet size={16} />
+              <span>
+                Bayar Sekaligus {selectedPayrollIds.length > 0 ? `(${selectedPayrollIds.length})` : `(${totalUnpaidCount})`}
+              </span>
+            </button>
+          )}
+
           <button
             onClick={openGenerateModal}
             className="flex items-center justify-center gap-1.5 px-4.5 py-2.5 bg-blue-600 hover:bg-blue-755 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/10 hover:shadow-blue-500/20 hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer w-full sm:w-auto"
@@ -471,8 +570,25 @@ export default function PayrollPage() {
               setPeriodFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-transparent border-none text-xs focus:outline-none text-slate-700 font-semibold"
+            className="bg-transparent border-none text-xs focus:outline-none text-slate-700 font-semibold cursor-pointer"
           />
+          {periodFilter ? (
+            <button
+              type="button"
+              onClick={() => {
+                setPeriodFilter("");
+                setCurrentPage(1);
+              }}
+              className="text-[10px] font-bold px-2 py-1 bg-slate-200 hover:bg-blue-100 hover:text-blue-700 text-slate-600 rounded-lg transition-colors cursor-pointer"
+              title="Tampilkan Semua Periode Bulan"
+            >
+              Semua Bulan
+            </button>
+          ) : (
+            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">
+              Semua Bulan
+            </span>
+          )}
         </div>
 
         {/* Search */}
@@ -523,12 +639,56 @@ export default function PayrollPage() {
         </div>
       </div>
 
+      {/* Sticky Bulk Action Banner */}
+      {selectedPayrollIds.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="no-print bg-slate-900 text-white rounded-2xl p-3.5 px-5 flex flex-wrap items-center justify-between gap-3 shadow-lg border border-slate-800"
+        >
+          <div className="flex items-center gap-3">
+            <span className="bg-emerald-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-lg">
+              {selectedPayrollIds.length} Karyawan Terpilih
+            </span>
+            <span className="text-xs text-slate-300">
+              Total Gaji Bersih: <strong className="text-emerald-400 font-extrabold">Rp {totalBulkPayAmount.toLocaleString("id-ID")}</strong>
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSelectedPayrollIds([])}
+              className="text-xs text-slate-400 hover:text-white px-3 py-1.5 font-semibold transition-colors cursor-pointer"
+            >
+              Batal Pilih
+            </button>
+            <button
+              onClick={() => openBulkPayModal(selectedPayrollIds)}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+            >
+              <CheckCircle size={14} />
+              <span>Proses Bayar Sekaligus</span>
+            </button>
+          </div>
+        </motion.div>
+      )}
+
       {/* Table List */}
       <div className="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-slate-200 text-slate-400 font-semibold h-11 bg-slate-50/50 sticky top-0 z-10">
+                <th className="py-2.5 px-4 w-10 text-center no-print">
+                  <input
+                    type="checkbox"
+                    checked={isAllDraftSelected}
+                    onChange={handleToggleSelectAllDraft}
+                    disabled={draftPayrollsInView.length === 0}
+                    title="Pilih Semua Karyawan Belum Dibayar di Halaman Ini"
+                    className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 h-4 w-4 cursor-pointer disabled:opacity-40"
+                  />
+                </th>
                 <th
                   onClick={() => handleSort("employee")}
                   className="py-2.5 px-4 cursor-pointer hover:text-slate-800 transition-colors select-none"
@@ -583,13 +743,22 @@ export default function PayrollPage() {
             <tbody className="divide-y divide-slate-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center">
+                  <td colSpan={10} className="py-12 text-center">
                     <Loader2 size={24} className="animate-spin text-blue-600 mx-auto" />
                   </td>
                 </tr>
               ) : paginatedPayrolls.length > 0 ? (
                 paginatedPayrolls.map((pr) => (
-                  <tr key={pr.id} className="hover:bg-slate-50/40 transition-colors h-14">
+                  <tr key={pr.id} className={`hover:bg-slate-50/40 transition-colors h-14 ${selectedPayrollIds.includes(pr.id) ? "bg-emerald-50/30" : ""}`}>
+                    <td className="py-3 px-4 text-center no-print">
+                      <input
+                        type="checkbox"
+                        checked={selectedPayrollIds.includes(pr.id)}
+                        onChange={() => handleToggleSelectPayroll(pr.id)}
+                        disabled={pr.status === "PAID"}
+                        className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 h-4 w-4 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                      />
+                    </td>
                     <td className="py-3 px-4">
                       <div>
                         <p className="font-bold text-slate-900 text-xs">{pr.employee.name}</p>
@@ -677,7 +846,7 @@ export default function PayrollPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-slate-400 font-medium">
+                  <td colSpan={10} className="py-12 text-center text-slate-400 font-medium">
                     Tidak ada data payroll ditemukan untuk periode {periodFilter}.
                   </td>
                 </tr>
@@ -742,15 +911,55 @@ export default function PayrollPage() {
               <form onSubmit={handleSubmitGenerate(onGenerateSubmit)} className="space-y-4">
                 
                 {/* Period Selector */}
-                <div className="relative">
-                  <input
-                    {...registerGenerate("period")}
-                    type="month"
-                    className="w-full px-3.5 py-3 pt-5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 font-semibold"
-                  />
-                  <label className="absolute left-3.5 top-1.5 text-[9px] font-bold text-slate-400 uppercase pointer-events-none">
-                    Periode Gaji
-                  </label>
+                <div className="space-y-1.5">
+                  <div className="relative">
+                    <input
+                      {...registerGenerate("period")}
+                      type="month"
+                      className="w-full px-3.5 py-3 pt-5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700 font-semibold"
+                    />
+                    <label className="absolute left-3.5 top-1.5 text-[9px] font-bold text-slate-400 uppercase pointer-events-none">
+                      Periode Gaji (Pilih Bulan Mana Saja)
+                    </label>
+                  </div>
+                  {/* Quick Preset Buttons */}
+                  <div className="flex gap-1.5 flex-wrap items-center pt-0.5">
+                    <span className="text-[10px] text-slate-400 font-medium">Pilih Cepat:</span>
+                    {[
+                      {
+                        label: "Bulan Ini",
+                        getPeriod: () => {
+                          const d = new Date();
+                          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+                        },
+                      },
+                      {
+                        label: "Bulan Lalu",
+                        getPeriod: () => {
+                          const d = new Date();
+                          d.setMonth(d.getMonth() - 1);
+                          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+                        },
+                      },
+                      {
+                        label: "Bulan Depan",
+                        getPeriod: () => {
+                          const d = new Date();
+                          d.setMonth(d.getMonth() + 1);
+                          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+                        },
+                      },
+                    ].map((preset) => (
+                      <button
+                        key={preset.label}
+                        type="button"
+                        onClick={() => setGenerateValue("period", preset.getPeriod())}
+                        className="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-600 text-[10px] font-bold rounded-lg transition-colors cursor-pointer"
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Employee Checklist selection box */}
@@ -1189,6 +1398,149 @@ export default function PayrollPage() {
                       <>
                         <CheckCircle size={14} />
                         <span>Proses & Konfirmasi Bayar Gaji</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal Bulk Pay Confirmation */}
+      <AnimatePresence>
+        {isBulkPayModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="bg-white dark:bg-slate-900 w-full max-w-xl rounded-3xl shadow-xl border border-slate-100 dark:border-slate-800 p-6 z-10 space-y-5"
+            >
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3.5">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center font-bold">
+                    <Wallet size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
+                      Konfirmasi Pembayaran Gaji Sekaligus
+                    </h3>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Proses pencairan gaji massal untuk {selectedPayrollIds.length} karyawan terpilih.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsBulkPayModalOpen(false)}
+                  className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl text-slate-400 cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <form onSubmit={handleConfirmBulkPay} className="space-y-4">
+                
+                {/* Total Summary Banner */}
+                <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 flex items-center justify-between">
+                  <div>
+                    <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider block">
+                      Total Pencairan ({selectedPayrollIds.length} Karyawan)
+                    </span>
+                    <span className="text-2xl font-black text-emerald-700 dark:text-emerald-300">
+                      Rp {totalBulkPayAmount.toLocaleString("id-ID")}
+                    </span>
+                  </div>
+                  <span className="px-3 py-1 rounded-xl bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-300 font-bold text-xs border border-emerald-200 dark:border-emerald-800">
+                    Periode {periodFilter || "Semua"}
+                  </span>
+                </div>
+
+                {/* Payroll List Preview */}
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    Daftar Karyawan yang Akan Dibayar
+                  </span>
+                  <div className="border border-slate-200 dark:border-slate-700/60 rounded-2xl max-h-40 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 bg-slate-50/50 dark:bg-slate-800/30 p-2 text-xs">
+                    {selectedPayrollsList.map((pr) => (
+                      <div key={pr.id} className="flex items-center justify-between p-2">
+                        <div>
+                          <p className="font-bold text-slate-900 dark:text-white">{pr.employee.name}</p>
+                          <p className="text-[10px] text-slate-400">{pr.employee.position?.name}</p>
+                        </div>
+                        <span className="font-extrabold text-emerald-600 dark:text-emerald-400">
+                          Rp {pr.totalSalary.toLocaleString("id-ID")}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Form Controls */}
+                <div className="space-y-3 pt-1">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-slate-500 uppercase">Metode Pembayaran</label>
+                      <select
+                        value={bulkPaymentMethod}
+                        onChange={(e) => setBulkPaymentMethod(e.target.value)}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      >
+                        <option value="BANK_TRANSFER">Transfer Bank Payroll Massal</option>
+                        <option value="MANUAL_TRANSFER">Transfer Manual (ATM / M-Banking)</option>
+                        <option value="CASH">Tunai / Kasir (Cash)</option>
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-slate-500 uppercase">No. Referensi Batch</label>
+                      <input
+                        type="text"
+                        value={bulkTransferRef}
+                        onChange={(e) => setBulkTransferRef(e.target.value)}
+                        placeholder="BATCH-XXXXXX"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-mono font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-500 uppercase">Tanggal Pembayaran / Pencairan</label>
+                    <input
+                      type="date"
+                      value={bulkPaidDate}
+                      onChange={(e) => setBulkPaidDate(e.target.value)}
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Modal Footer Actions */}
+                <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => setIsBulkPayModalOpen(false)}
+                    className="px-4 py-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={bulkPayMutation.isPending}
+                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-xl text-xs font-extrabold transition-all cursor-pointer flex items-center gap-1.5 shadow-md shadow-emerald-600/20"
+                  >
+                    {bulkPayMutation.isPending ? (
+                      <>
+                        <Loader2 size={14} className="animate-spin" />
+                        <span>Memproses Pembayaran Massal...</span>
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle size={14} />
+                        <span>Konfirmasi & Bayar Sekaligus ({selectedPayrollIds.length} Karyawan)</span>
                       </>
                     )}
                   </button>

@@ -19,7 +19,18 @@ export const employeeSchema = z.object({
   photo: z.string().optional().nullable(),
   
   // HRIS additions
-  npwp: z.string().optional().nullable(),
+  npwp: z
+    .string()
+    .optional()
+    .nullable()
+    .refine(
+      (val) => {
+        if (!val) return true;
+        const digitsOnly = val.replace(/\D/g, "");
+        return digitsOnly.length <= 16;
+      },
+      { message: "Nomor NPWP tidak boleh lebih dari 16 digit angka" }
+    ),
   bankName: z.enum(["BANK_BCA", "BANK_BRI", "BANK_MANDIRI", "BANK_BNI"], {
     message: "Nama Bank wajib dipilih",
   }),

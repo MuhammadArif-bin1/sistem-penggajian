@@ -1109,13 +1109,22 @@ export default function EmployeesPage() {
                       <input
                         {...register("npwp")}
                         type="text"
+                        maxLength={16}
+                        onInput={(e) => {
+                          e.currentTarget.value = e.currentTarget.value.replace(/\D/g, "").slice(0, 16);
+                        }}
                         placeholder=" "
-                        className="peer w-full px-3.5 py-3 pt-5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 placeholder-transparent transition-all"
+                        className="peer w-full px-3.5 py-3 pt-5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-900 placeholder-transparent transition-all font-mono"
                       />
                       <label className="absolute left-3.5 top-1.5 text-[9px] font-bold text-slate-400 uppercase transition-all peer-placeholder-shown:text-xs peer-placeholder-shown:top-3.5 peer-placeholder-shown:font-semibold peer-focus:top-1.5 peer-focus:text-[9px] peer-focus:font-bold peer-focus:text-blue-655 pointer-events-none">
-                        Nomor NPWP
+                        Nomor NPWP (Maks 16 Digit)
                       </label>
                     </div>
+                    {errors.npwp && (
+                      <span className="text-[10px] text-rose-500 font-medium block">
+                        {errors.npwp.message}
+                      </span>
+                    )}
                   </div>
 
                   <div className="space-y-1">

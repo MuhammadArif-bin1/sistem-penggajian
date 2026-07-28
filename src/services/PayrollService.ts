@@ -1,7 +1,7 @@
 import { payrollRepository } from "@/repositories/PayrollRepository";
 import { employeeRepository } from "@/repositories/EmployeeRepository";
 import { positionRepository } from "@/repositories/PositionRepository";
-import { generatePayrollSchema, updatePayrollSchema, GeneratePayrollInput, UpdatePayrollInput } from "@/schemas/payroll.schema";
+import { generatePayrollSchema, updatePayrollSchema, bulkPayPayrollSchema, GeneratePayrollInput, UpdatePayrollInput, BulkPayPayrollInput } from "@/schemas/payroll.schema";
 import { activityLogService } from "./ActivityLogService";
 import { prisma } from "@/lib/prisma";
 
@@ -280,6 +280,87 @@ export class PayrollService {
       slips,
       totalSalaryYear,
       lastSlip: slips[0] || null,
+    };
+  }
+
+  async bulkPayPayrolls(input: BulkPayPayrollInput, actorId: string) {
+    const validated = bulkPayPayrollSchema.parse(input);
+    const { payrollIds, paidAt } = validated;
+
+    const payrolls = await prisma.payroll.findMany({
+      where: {
+        id: { in: payrollIds },
+        status: "DRAFT",
+      },
+      include: {
+        employee: true,
+      },
+    });
+
+    if (payrolls.length === 0) {
+      throw new Error("Tidak ada payroll berstatus 'Belum Dibayar' yang dapat diproses");
+    }
+
+    const payDate = paidAt || new Date();
+
+    // Perform bulk update & bulk slip creation in transaction with 30s timeout
+    await prisma.$transaction(
+      async (tx) => {
+        // 1. Bulk update status to PAID
+        await tx.payroll.updateMany({
+          where: {
+            id: { in: payrolls.map((p) => p.id) },
+            status: "DRAFT",
+          },
+          data: {
+            status: "PAID",
+            paidAt: payDate,
+          },
+        });
+
+        // 2. Fetch all existing salary slips for these payrolls in ONE single batch query
+        const existingSlips = await tx.salarySlip.findMany({
+          where: {
+            payrollId: { in: payrolls.map((p) => p.id) },
+          },
+          select: { payrollId: true },
+        });
+
+        const existingSlipSet = new Set(existingSlips.map((s) => s.payrollId));
+
+        // 3. Filter payrolls missing a salary slip
+        const missingSlipsData = payrolls
+          .filter((p) => !existingSlipSet.has(p.id))
+          .map((p) => ({
+            payrollId: p.id,
+            employeeId: p.employeeId,
+            qrCodeText: `PAYROLL-SLIP-${p.id}-${p.employeeId}-${p.period}`,
+          }));
+
+        if (missingSlipsData.length > 0) {
+          await tx.salarySlip.createMany({
+            data: missingSlipsData,
+            skipDuplicates: true,
+          });
+        }
+      },
+      {
+        timeout: 30000,
+      }
+    );
+
+    const totalPaidAmount = payrolls.reduce((sum, p) => sum + p.totalSalary, 0);
+
+    await activityLogService.log(
+      actorId,
+      `Pembayaran gaji sekaligus untuk ${payrolls.length} karyawan - Total Rp ${totalPaidAmount.toLocaleString("id-ID")}`,
+      "BULK_PAY_PAYROLL"
+    );
+
+    return {
+      successCount: payrolls.length,
+      totalPaidAmount,
+      payrolls,
     };
   }
 }

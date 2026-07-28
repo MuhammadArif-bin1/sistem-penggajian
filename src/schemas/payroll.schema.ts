@@ -20,3 +20,15 @@ export const updatePayrollSchema = z.object({
 });
 
 export type UpdatePayrollInput = z.infer<typeof updatePayrollSchema>;
+
+export const bulkPayPayrollSchema = z.object({
+  payrollIds: z.array(z.string()).min(1, "Pilih minimal 1 payroll untuk dibayar"),
+  paymentMethod: z.string().optional(),
+  paidAt: z.preprocess((val) => {
+    if (!val) return new Date();
+    return new Date(val as string);
+  }, z.date()).optional(),
+});
+
+export type BulkPayPayrollInput = z.infer<typeof bulkPayPayrollSchema>;
+
